@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.2" reference="Admin.LiveSecurityCacheViewer" locale="">
+  <web>Admin</web>
+  <name>LiveSecurityCacheViewer</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1474559808000</creationDate>
+  <parent>Admin.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1474634100000</date>
+  <contentUpdateDate>1474634100000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Live Security Cache Viewer</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+(% style="position:absolute; width:100%; padding-left: 15px; padding-right: 30px; z-index: 800" %)
+(((
+
+{{html}}
+&lt;div class="btn-group pull-right"&gt;&lt;button id="visfreeze" class="btn btn-secondary"&gt;Freeze&lt;/button&gt;&lt;button id="visreload" class="btn btn-primary"&gt;Reload&lt;/button&gt;&lt;/div&gt;&lt;div id="nodecount"&gt;&lt;/div&gt;
+{{/html}}
+
+)))
+(% id="visdiv" style="width:100%; height:800px" data-wsurl="$services.websocket.getURL('securitycachevisualizationservice')" %)
+(((
+)))
+{{/velocity}}</content>
+  <object>
+    <name>Admin.LiveSecurityCacheViewer</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>25d09587-1710-4ea2-8fa1-1f5fe9bda65b</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>require.config({
+    paths: {
+       'css': 'https://cdnjs.cloudflare.com/ajax/libs/require-css/0.1.8/css.min',
+       'domReady': 'https://cdnjs.cloudflare.com/ajax/libs/require-domReady/2.0.1/domReady.min',
+       'vis': 'https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min',
+       'vis-css': 'https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min'
+  }
+});
+require(['jquery', 'vis', 'css!vis-css', 'domReady!'], function ($, vis) {
+  var edgeColorMap = {
+        'shadow' : 'black',
+        'member' : 'lightblue',
+        'user' : 'purple',
+        'entity' : 'red',
+        'space' : 'blue',
+        'wiki' : 'orange',
+        'main' : 'black',
+        'unknown' : 'lightgray'
+      },  edgeWidthMap = {
+        'shadow' : 2,
+        'member' : 2,
+        'user' : 1,
+        'entity' : 1,
+        'space' : 2,
+        'wiki' : 3,
+        'main' : 4,
+        'unknown' : 5
+      },
+      freezed = false,
+      nodes = new vis.DataSet(),
+      edges = new vis.DataSet(),
+      data = {
+        nodes: nodes,
+        edges: edges
+      },
+      options = {
+        groups: {
+          "doc": {color:'blue'},
+          "user": {color:'blue', shape:'star', size:15},
+          "group": {color:'blue', shape:'diamond', size:20},
+          "space": {color:'orange', size:20},
+          "wiki": {color:'red', shape:'database', font: {size: 14}},
+          "access": {color:'red', size:5},
+          "shadow": {color:'black', size:15},
+          "unknown": {color:'lightgray'}
+        },
+        "nodes": {
+          "font": {
+            "size": 8
+          },
+          "shape": "dot",
+          "size": 10
+        }
+      },
+      netelem = $('#visdiv'), countelem = $('#nodecount'), freezelem = $('#visfreeze'),
+      freezed = false,
+      changed = false,
+      network = new vis.Network(netelem[0], data, options),
+      wsurl = netelem.data('wsurl'),
+      ws = new WebSocket(wsurl);
+
+  ws.onmessage = function (msg) {
+    function buildNode(node) {
+      var nodeObj = {id: node.key, group: node.type};
+        if (node.type == 'access') {
+          nodeObj.title = node.reference + '/' + node.userReference;
+        } else {
+          nodeObj.label = node.reference;
+          nodeObj.title = node.key;
+        }
+      return nodeObj;
+    }
+    function getEdgeKey(fromNode, toNode) {
+      return fromNode.key + "&lt;=&gt;" + toNode.key;
+    }
+    function buildEdge(fromNode, toNode, type) {
+      return {id: getEdgeKey(fromNode, toNode),from: fromNode.key, to: toNode.key, color: edgeColorMap[type], width: edgeWidthMap[type]};
+    }
+    function addNodes(nodes) {
+      $.each(json.nodes, function(index, node) {
+        nodes.add(buildNode(node));
+        $.each(node.parents, function(index, parent) {
+          if (!edges.get(getEdgeKey(node, parent))) {
+            edges.add(buildEdge(node, parent, parent.type));
+          }
+        });
+        $.each(node.children, function(index, child) {
+          if (!edges.get(getEdgeKey(child, node))) {
+            edges.add(buildEdge(child, node, child.type));
+          }
+        });
+      });
+    }
+    function removeNodes(nodes) {
+      $.each(json.nodes, function(index, node) {
+        nodes.remove(node.key);
+        $.each(node.parents, function(index, parent) {
+          edges.remove(getEdgeKey(node, parent));
+        });
+        $.each(node.children, function(index, child) {
+          edges.remove(getEdgeKey(child, node));
+        });
+      });
+    }
+    function updateNodes(nodes) {
+      $.each(json.nodes, function(index, node) {
+        if (nodes.get(node.key) == null) {
+          addNodes([node]);
+        } else {
+          nodes.update(buildNode(node));
+          var nodeLinks = edges.getIds({filter: function(it) { return (item.to == node.key || item.from == node.key) } });
+          $.each(node.parents, function(index, parent) {
+            var edgeKey = getEdgeKey(node, parent);
+            if (!edges.get(edgeKey)) {
+              edges.add(buildEdge(node, parent, parent.type));
+            } else {
+              var i = nodeLinks.indexOf(edgeKey);
+              if (i &gt;= 0) nodeLinks.splice(i, 1);
+            }
+          });
+          $.each(node.children, function(index, child) {
+            var edgeKey = getEdgeKey(child, node);
+            if (!edges.get(edgeKey)) {
+              edges.add(buildEdge(child, node, child.type));
+            } else {
+              var i = nodeLinks.indexOf(edgeKey);
+              if (i &gt;= 0) nodeLinks.splice(i, 1);
+            }
+          });
+          $.each(nodeLinks, function(index, link) {
+            edges.remove(link);
+          });
+        }
+      });
+    }
+
+    if (freezed || !msg.isTrusted) {
+      changed = true;
+      return;
+    }
+
+    var json = JSON.parse(msg.data)
+    console.log(json.type);
+
+    if (json.type == 'init') {
+      edges.clear();
+      nodes.clear();
+    }
+
+    if (json.type == 'init' || json.type == 'add') {
+      addNodes(nodes);
+    } else if (json.type == 'remove') {
+      removeNodes(nodes);
+    } else if (json.type == 'update') {
+      updateNodes(nodes);
+    }
+
+    countelem.text(nodes.length);
+  }
+
+  $('#visreload').click(function() {
+    ws.send(JSON.stringify({"type":"refresh"}));
+  })
+
+  freezelem.click(function() {
+    if (freezed) {
+      freezed = false;
+      if (changed) {
+        ws.send(JSON.stringify({"type":"refresh"}));
+      }
+    } else {
+      freezed = true;
+      changed = false;
+    }
+    freezelem.toggleClass("btn-secondary btn-danger");
+  })
+
+});</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+</xwikidoc>

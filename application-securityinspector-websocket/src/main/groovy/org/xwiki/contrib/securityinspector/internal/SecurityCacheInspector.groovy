@@ -145,8 +145,7 @@ public class SecurityCacheInspector
     {
         def entry = child.getEntry();
         def pEntry = parent.getEntry();
-        return entry instanceof SecurityShadowEntry && parent == originalEntry
-            ? 'shadow'
+        return entry instanceof SecurityShadowEntry && parent == originalEntry ? 'shadow'
             : (child.isUser()
                 && !(entry instanceof SecurityAccessEntry)
                 && pEntry.reference instanceof GroupSecurityReference

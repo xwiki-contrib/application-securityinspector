@@ -23,7 +23,7 @@
   <parent>
     <artifactId>application-securityinspector</artifactId>
     <groupId>org.xwiki.contrib.securityinspector</groupId>
-    <version>1.0.1</version>
+    <version>1.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 

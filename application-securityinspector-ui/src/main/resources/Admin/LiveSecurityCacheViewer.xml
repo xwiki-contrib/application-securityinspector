@@ -213,27 +213,35 @@ require(['jquery', 'vis', 'css!vis-css', 'domReady!'], function ($, vis) {
     function addNodes(nodes) {
       $.each(json.nodes, function(index, node) {
         nodes.add(buildNode(node));
-        $.each(node.parents, function(index, parent) {
-          if (!edges.get(getEdgeKey(node, parent))) {
-            edges.add(buildEdge(node, parent, parent.type));
-          }
-        });
-        $.each(node.children, function(index, child) {
-          if (!edges.get(getEdgeKey(child, node))) {
-            edges.add(buildEdge(child, node, child.type));
-          }
-        });
+        if (node.parents) {
+          $.each(node.parents, function(index, parent) {
+            if (!edges.get(getEdgeKey(node, parent))) {
+              edges.add(buildEdge(node, parent, parent.type));
+            }
+          });
+        }
+        if (node.children) {
+          $.each(node.children, function(index, child) {
+            if (!edges.get(getEdgeKey(child, node))) {
+              edges.add(buildEdge(child, node, child.type));
+            }
+          });
+        }
       });
     }
     function removeNodes(nodes) {
       $.each(json.nodes, function(index, node) {
         nodes.remove(node.key);
-        $.each(node.parents, function(index, parent) {
-          edges.remove(getEdgeKey(node, parent));
-        });
-        $.each(node.children, function(index, child) {
-          edges.remove(getEdgeKey(child, node));
-        });
+        if (node.parents) {
+          $.each(node.parents, function(index, parent) {
+            edges.remove(getEdgeKey(node, parent));
+          });
+        }
+        if (node.children) {
+          $.each(node.children, function(index, child) {
+            edges.remove(getEdgeKey(child, node));
+          });
+        }
       });
     }
     function updateNodes(nodes) {
@@ -243,24 +251,28 @@ require(['jquery', 'vis', 'css!vis-css', 'domReady!'], function ($, vis) {
         } else {
           nodes.update(buildNode(node));
           var nodeLinks = edges.getIds({filter: function(it) { return (item.to == node.key || item.from == node.key) } });
-          $.each(node.parents, function(index, parent) {
-            var edgeKey = getEdgeKey(node, parent);
-            if (!edges.get(edgeKey)) {
-              edges.add(buildEdge(node, parent, parent.type));
-            } else {
-              var i = nodeLinks.indexOf(edgeKey);
-              if (i &gt;= 0) nodeLinks.splice(i, 1);
-            }
-          });
-          $.each(node.children, function(index, child) {
-            var edgeKey = getEdgeKey(child, node);
-            if (!edges.get(edgeKey)) {
-              edges.add(buildEdge(child, node, child.type));
-            } else {
-              var i = nodeLinks.indexOf(edgeKey);
-              if (i &gt;= 0) nodeLinks.splice(i, 1);
-            }
-          });
+          if (node.parents) {
+            $.each(node.parents, function(index, parent) {
+              var edgeKey = getEdgeKey(node, parent);
+              if (!edges.get(edgeKey)) {
+                edges.add(buildEdge(node, parent, parent.type));
+              } else {
+                var i = nodeLinks.indexOf(edgeKey);
+                if (i &gt;= 0) nodeLinks.splice(i, 1);
+              }
+            });
+          }
+          if (node.children) {
+            $.each(node.children, function(index, child) {
+              var edgeKey = getEdgeKey(child, node);
+              if (!edges.get(edgeKey)) {
+                edges.add(buildEdge(child, node, child.type));
+              } else {
+                var i = nodeLinks.indexOf(edgeKey);
+                if (i &gt;= 0) nodeLinks.splice(i, 1);
+              }
+            });
+          }
           $.each(nodeLinks, function(index, link) {
             edges.remove(link);
           });

@@ -30,7 +30,7 @@
   <groupId>org.xwiki.contrib.securityinspector</groupId>
   <artifactId>application-securityinspector</artifactId>
   <packaging>pom</packaging>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.0.1</version>
   <name>Security Inspector Application - Parent POM</name>
   <description>Application Security Inspector - Parent POM</description>
   <properties>
@@ -41,7 +41,7 @@
     <connection>scm:git:git://github.com/xwiki-contrib/application-securityinspector.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki-contrib/application-securityinspector.git</developerConnection>
     <url>https://github.com/xwiki-contrib/application-securityinspector/tree/master</url>
-    <tag>HEAD</tag>
+    <tag>application-securityinspector-1.0.1</tag>
   </scm>
   <issueManagement>
     <system>jira</system>
